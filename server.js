@@ -21,55 +21,79 @@ db.connect(err => {
 
 // Create HTTP server
 const server = http.createServer((req, res) => {
+
+  /*Dont Change*/{
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+      // Respond with 200 OK status
+      res.writeHead(200);
+      res.end();
+      return;
+  }
+  }
+  
   const { pathname, query } = url.parse(req.url, true);
 
   // Route for handling login requests
-  if (pathname === '/login') {
-    const { username, password } = query;
-    if (!username || !password) {
-      res.writeHead(400, { 'Content-Type': 'text/plain' });
-      res.end('Missing username or password');
-      return;
-    }
 
-    // Check if user exists in the database
-    db.query('select * from doclogindetails WHERE EID = ?', [username], (err, results) => {
-      if (err) {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Query Err: Internal server error');
-        return;
-      }
-      if (results.length === 0) {
-        res.writeHead(401, { 'Content-Type': 'text/plain' });
-        res.end('Invalid username or password');
+  if (pathname === '/plogin' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      const { username, password } = JSON.parse(body);
+        
+      // Bad Request
+      if (!username || !password) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Missing username or password');
         return;
       }
 
-      const user = results[0];
-      // Compare hashed password
-      
-      bcrypt.compare(password, user.Passw, (bcryptErr, bcryptResult) => {
-        if (bcryptErr) {
+      // Check if user exists in the database
+      db.query('select * from patlogindetails WHERE EID = ?', [username], (err, results) => {
+        if (err) {
           res.writeHead(500, { 'Content-Type': 'text/plain' });
-          res.write('Bcrypt Err: Internal server error');
-          res.end(JSON.stringify(bcryptErr));
+          res.end('Query Err: Internal server error');
           return;
         }
-        if (!bcryptResult) {
+        if (results.length === 0) { // User Doesn't Exist
           res.writeHead(401, { 'Content-Type': 'text/plain' });
           res.end('Invalid username or password');
           return;
         }
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('Login successful');
+        
+        // Compare hashed password
+        const user = results[0];
+              
+        bcrypt.compare(password, user.Passw, (bcryptErr, bcryptResult) => {
+          if (bcryptErr) {
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.write('Bcrypt Err: Internal server error');
+            res.end(JSON.stringify(bcryptErr));
+            return;
+          }
+          if (!bcryptResult) {
+            res.writeHead(401, { 'Content-Type': 'text/plain' });
+            res.end('Invalid username or password');
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          res.end('Login successful');
+
+
+        });
+
+        
       });
     });
-  } else {
-    // Handle other routes
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not found');
   }
-});
 
 // Start the server
 const PORT = process.env.PORT || 8081;
