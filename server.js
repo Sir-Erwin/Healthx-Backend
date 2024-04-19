@@ -47,6 +47,7 @@ const server = http.createServer((req, res) => {
 
       const user = results[0];
       // Compare hashed password
+      
       bcrypt.compare(password, user.Passw, (bcryptErr, bcryptResult) => {
         if (bcryptErr) {
           res.writeHead(500, { 'Content-Type': 'text/plain' });
