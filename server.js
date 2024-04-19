@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
 
   // Route for handling login requests
 
-  if (pathname === '/plogin' && req.method === 'POST') {
+  if (pathname === '/doclogin' && req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
       }
 
       // Check if user exists in the database
-      db.query('select * from patlogindetails WHERE EID = ?', [username], (err, results) => {
+      db.query('select * from doclogindetails WHERE EID = ?', [username], (err, results) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'text/plain' });
           res.end('Query Err: Internal server error');
@@ -86,14 +86,17 @@ const server = http.createServer((req, res) => {
           }
           res.writeHead(200, { 'Content-Type': 'text/plain' });
           res.end('Login successful');
-
-
         });
-
-        
       });
     });
   }
+
+  else{
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+  }
+    
+});
 
 // Start the server
 const PORT = process.env.PORT || 8081;
