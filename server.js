@@ -1,17 +1,13 @@
 const http = require('http');
 const url = require('url');
 const mysql = require('mysql2');
-const fs = require('fs');
 const bcrypt = require('bcrypt');
 
 // Create a MySQL connection
 const db = mysql.createConnection({
-  host: "healthx-server.mysql.database.azure.com",
-  user: "tvoumnlmnu", password: "4U22732E250EVZ38$",
-  database: "healthx", port:3306, 
-  ssl:{
-      ca:fs.readFileSync("DigiCertGlobalRootCA.crt.pem")
-  }
+  host: "nj5rh9gto1v5n05t.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+  user: "vf3kex8mlhqctqd0", password: "eyi36qurfvsqlnuj",
+  database: "wb1uv6dqlflyabu2", port:3306, 
 });
 
 // Connect to MySQL
