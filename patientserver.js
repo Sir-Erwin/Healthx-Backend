@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
 
   // Route for handling login requests
 
-  if (pathname === '/patientlogin' && req.method === 'POST') {
+  if (pathname === '/plogin' && req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
