@@ -1,0 +1,30 @@
+.appointments-container {
+    padding: 20px;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  thead {
+    background-color: rgb(113, 99, 186);
+    color: white;
+  }
+  
+  th,
+  td {
+    border: 1px solid #ffffff;
+    text-align: left;
+    padding: 8px;
+    font-size: 20px;
+  }
+  
+  th {
+    background-color: rgba(117, 20, 139, 0.407);
+  }
+  
+  td {
+    background-color: rgb(239, 245, 248);
+  }
+  
