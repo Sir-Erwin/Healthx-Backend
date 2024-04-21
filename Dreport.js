@@ -42,7 +42,7 @@ function insertEmployeeData(formData, callback) {
 const server = http.createServer((req, res) => {
     const reqUrl = url.parse(req.url, true);
 
-    if (reqUrl.pathname === '/form' && req.method === 'GET') {
+    if (req.url === '/form' && req.method === 'GET') {
         // Serve HTML file with form
         fs.readFile('add-employee.html', (err, data) => {
             if (err) {
@@ -53,7 +53,7 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/html' });
             res.end(data);
         });
-    } else if (reqUrl.pathname === '/table' && req.method === 'GET') {
+    } else if (req.url === '/table' && req.method === 'GET') {
         // Serve HTML file with table
         fs.readFile('employee.html', (err, data) => {
             if (err) {
