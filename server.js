@@ -2,6 +2,8 @@ const http = require('http');
 const url = require('url');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const path = require('path');
+
 
 // Create a MySQL connection
 const db = mysql.createConnection({
@@ -21,6 +23,7 @@ db.connect(err => {
 
 // Create HTTP server
 const server = http.createServer((req, res) => {
+  const path = url.parse(req.url).pathname;
 
   /*Dont Change*/{
   // Set CORS headers
@@ -37,11 +40,21 @@ const server = http.createServer((req, res) => {
   }
   }
   
-  const { pathname, query } = url.parse(req.url, true);
+  //const { pathname, query } = url.parse(req.url, true);
+
+  const loginPagePath = path.join(__dirname, '.', '..', 'Doctor Database', 'Dimi-src', 'home', 'entry.html');
+
+let loginPage;
+try {
+    loginPage = fs.readFileSync(loginPagePath, 'utf8');
+} catch (error) {
+    console.error('Error reading entry.html:', error);
+    process.exit(1); // Exit the process with an error status code
+}
 
   // Route for handling login requests
 
-  if (pathname === '/doclogin' && req.method === 'POST') {
+  if (pathname === '/login' && req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
@@ -57,7 +70,7 @@ const server = http.createServer((req, res) => {
       }
 
       // Check if user exists in the database
-      db.query('select * from doclogindetails WHERE EID = ?', [username], (err, results) => {
+      db.query('select EID from Employee WHERE EID = ?', [username], (err, results) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'text/plain' });
           res.end('Query Err: Internal server error');
