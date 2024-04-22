@@ -70,7 +70,7 @@ try {
       }
 
       // Check if user exists in the database
-      db.query('select EID from Employee WHERE EID = ?', [username], (err, results) => {
+      db.query('select EID from EMPLOYEE WHERE EID = ?', [username], (err, results) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'text/plain' });
           res.end('Query Err: Internal server error');
