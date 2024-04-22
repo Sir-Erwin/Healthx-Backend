@@ -1,5 +1,6 @@
 const http = require('http');
 const url = require('url');
+const fs = require('fs');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const path = require('path');
@@ -112,7 +113,7 @@ try {
 });
 
 // Start the server
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
