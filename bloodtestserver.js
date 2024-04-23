@@ -1,5 +1,5 @@
-const http from 'http';
-const mysql from 'mysql2';
+import http from 'http';
+import mysql from 'mysql2';
 const url = require('url');
 
 // Create a MySQL connection
