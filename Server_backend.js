@@ -23,8 +23,7 @@ const {Connection} = require('./connection');
 
 // Create an HTTP server
 const server = http.createServer((req, res) => {
-
-if(req.url == "/" && req.method === "GET"){
+    if(req.url == "/" && req.method === "GET"){
         console.log(dat);
         
         res.writeHead(200, {"Content-Type": "text/html"});
@@ -33,8 +32,8 @@ if(req.url == "/" && req.method === "GET"){
         res.end();
     }
 
-//Handle Patientlist
-else if (req.url === '/Patientlist') { // Updated URL matching
+ //Handle Patientlist
+  else if (req.url === '/Patientlist') { // Updated URL matching
       getAllPatients((error, patients) => {
         if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -46,8 +45,8 @@ else if (req.url === '/Patientlist') { // Updated URL matching
       });
     } 
 
-//Handle DoctorAppointments
-else if (req.url === '/DoctorAppointments') {
+ //Handle DoctorAppointments
+ else if (req.url === '/DoctorAppointments') {
       getAllAppointments((error, appointments) => {
         if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -59,8 +58,8 @@ else if (req.url === '/DoctorAppointments') {
       });
     } 
 
-//Handle DoctorPrescriptions
-else if (req.url === '/DoctorPrescriptions') {
+ //Handle DoctorPrescriptions
+    else if (req.url === '/DoctorPrescriptions') {
       if (req.method === 'GET') {
         // Get all prescriptions
         getAllPrescriptions((error, prescriptions) => {
@@ -73,7 +72,8 @@ else if (req.url === '/DoctorPrescriptions') {
           }
         });
       } 
-else if (req.method === 'POST') {
+    }
+    else if (req.method === 'POST') {
         // Add a new prescription
         let data = '';
         req.on('data', chunk => {
@@ -91,14 +91,14 @@ else if (req.method === 'POST') {
             }
           });
         });
-} 
-else {
+    } 
+    else {
         res.writeHead(405, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Method Not Allowed' }));
-      }
+    }
 
-// Handle Emplogin
-else if (pathname === '/emplogin' && req.method === 'POST') {
+ // Handle Emplogin
+ if (pathname === '/Emplogin' && req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
@@ -148,8 +148,8 @@ else if (pathname === '/emplogin' && req.method === 'POST') {
     });
   }
 
-// Handle doclogin
-else if (pathname === '/doclogin' && req.method === 'POST') {
+ // Handle doclogin
+ else if (pathname === '/doclogin' && req.method === 'POST') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
@@ -251,7 +251,7 @@ else if (pathname === '/doclogin' && req.method === 'POST') {
   }
  
     // Handle insertBloodTestResults request
- else if (req.url === '/insertBloodTestResults' && req.method === 'POST') {
+ else if (req.url === '/insertbloodTestResults' && req.method === 'POST') {
     let data = '';
     // Receive the data from the request body
     req.on('data', chunk => {
@@ -275,7 +275,7 @@ else if (pathname === '/doclogin' && req.method === 'POST') {
    
  
     // Handle insertKidneyFuncTestResults request
-  else if (req.url === '/insertKidneyFuncTestResults' && req.method === 'POST') {
+  else if (req.url === '/insertkidneyFuncTestResults' && req.method === 'POST') {
     let data = '';
     req.on('data', chunk => {
       data += chunk;
@@ -318,7 +318,7 @@ else if (pathname === '/doclogin' && req.method === 'POST') {
     });
   }
 
-else if (req.url === '/insertPathologicalTestResults' && req.method === 'POST') {
+ else if (req.url === '/insertPathologicalTestResults' && req.method === 'POST') {
     let data = '';
 
     // Receive the data from the request body
@@ -340,13 +340,14 @@ else if (req.url === '/insertPathologicalTestResults' && req.method === 'POST') 
       });
     });
   }
-
-else {
+ 
+ else {
     // Handle other routes
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not Found' }));
   }
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
