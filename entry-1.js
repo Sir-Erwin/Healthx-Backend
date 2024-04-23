@@ -80,7 +80,7 @@ function handleLoginRequest(req, res) {
     const password = formData.get('password');
 
     // Example MySQL query (if you're using a database)
-     db.query('INSERT INTO EMPLOYEE (FName, MInitial, LName, Contact, SSN, EID, Passw) VALUES (?, ?, ?, ?, ?, ?, ?)', [fname, mname, lname, email, social, eid, password], (err, results) => {
+     db.query('INSERT INTO EMPLOYEE (FName, MInitial, LName, Email, SSN, EID, Passw) VALUES (?, ?, ?, ?, ?, ?, ?)', [fname, mname, lname, email, social, eid, password], (err, results) => {
         if (err) {
             console.error('Error storing data:', err);
             res.writeHead(500, {'Content-Type': 'text/plain'});

@@ -1,8 +1,12 @@
-// backend/server.js
 
 const http = require('http');
 const url = require('url');
 const mysql = require('mysql');
+const fs = require('fs');
+const path = require('path');
+const cors = require('cors'); // Import the cors module
+
+
 
 // MySQL database connection configuration
 const db = mysql.createConnection({
@@ -21,26 +25,20 @@ db.connect((err) => {
 
 // Create HTTP server
 const server = http.createServer((req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500'); // Allow requests from any origin
+  res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500'); // Allow requests from this origin
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // Allow specified HTTP methods
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // Allow additional headers
 
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200);
+      res.end();
+      return;
+    }
   //const { method, url: reqUrl } = req;
   //const parsedUrl = url.parse(reqUrl, true);
 
   // Route request based on URL and HTTP method
-  if (req.method === 'GET' && req.url === '/addEm') {
-    // Serve the HTML form
-    fs.readFile('add-employee.html', (err, data) => {
-        if (err) {
-            res.writeHead(500, {'Content-Type': 'text/plain'});
-            res.end('Internal Server Error');
-            return;
-        }
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end(data);
-    });
-  } else if (req.method === 'POST' && req.url=== '/addEm') {
+   else if (req.method === 'POST' && req.url=== '/addEm') {
     let body = '';
     req.on('data', (chunk) => {
       body += chunk.toString();
@@ -52,7 +50,7 @@ const server = http.createServer((req, res) => {
       const {eid, fname, lname, email, gender, number, role } = data;
       // Insert data into MySQL table
       //const sql = 'INSERT INTO your_table (column_name) VALUES (?)';
-      db.query('INSERT INTO EMPLOYEE (EID, FName, LName, Contact, Gender, PhoneNum, Role) VALUES (?, ?, ?, ?, ?, ?, ?)', [eid, fname, lname, email, gender, number, role], (err, result) => {
+      db.query('INSERT INTO EMPLOYEE (EID, FName, LName, Email, Gender, PhoneNum, Role) VALUES (?, ?, ?, ?, ?, ?, ?)', [eid, fname, lname, email, gender, number, role], (err, result) => {
         if (err) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Error saving data' }));
@@ -68,7 +66,7 @@ const server = http.createServer((req, res) => {
   }
 });
 
-const port = 3000;
+const port = 5000;
 
 // Start server
 server.listen(port, () => {
