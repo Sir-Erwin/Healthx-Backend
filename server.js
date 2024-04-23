@@ -264,7 +264,6 @@ else if (req.method === 'POST' && req.url=== '/addEm') {
     const data = JSON.parse(body);
 
     const {eid, fname, lname, email, gender, number, role } = data;
-    // Insert data into MySQL table
     db.query('INSERT INTO EMPLOYEE (EID, FName, LName, Email, Gender, PhoneNum, Role) VALUES (?, ?, ?, ?, ?, ?, ?)', [eid, fname, lname, email, gender, number, role], (err, result) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -278,7 +277,6 @@ else if (req.method === 'POST' && req.url=== '/addEm') {
 }
 /*Displaying Employees on the table */
 else if (req.method === 'DELETE' && req.url.startsWith('/employees/')) {
-  // Extract employee number from the URL
   const number = req.url.split('/')[2];
   // Delete the employee from the database
   db.query('DELETE FROM EMPLOYEE WHERE PhoneNum = ?', [number], (error, results) => {
@@ -291,7 +289,6 @@ else if (req.method === 'DELETE' && req.url.startsWith('/employees/')) {
       }
   });
 } else if (req.url === '/employees') {
-  // Fetch employee details from MySQL database
   db.query('SELECT EID, FName, LName, Email, Gender, PhoneNum, Role FROM EMPLOYEE', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -318,7 +315,6 @@ else if (req.method === 'DELETE' && req.url.startsWith('/doc/')) {
       }
   });
 } else if (req.url === '/doc') {
-  // Fetch employee details from MySQL database
   db.query('SELECT EID, FName, LName, Contact, Gender, PhoneNum FROM DOCTOR', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -340,7 +336,6 @@ else if (req.method === 'POST' && req.url=== '/addDoc') {
     const data = JSON.parse(body);
 
     const {eid, fname, lname, email, gender, number, role } = data;
-    // Insert data into MySQL table
     db.query('INSERT INTO DOCTOR (EID, FName, LName, Contact, Gender, PhoneNum, Department) VALUES (?, ?, ?, ?, ?, ?, ?)', [eid, fname, lname, email, gender, number, role], (err, result) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -357,7 +352,6 @@ else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
   // Extract employee ID from the URL
   const id = req.url.split('/')[2];
 
-  // Delete the employee from the database
   db.query('DELETE FROM EMPLOYEE WHERE EID = ?', [id], (error, results) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -368,7 +362,18 @@ else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
       }
   });
 } else if (req.url === '/Sapp') {
-  // Fetch employee details from MySQL database
+  db.query('SELECT PATIENT_PID, FName, LName, Gender, Date, Time, CLINIC_clinic_id FROM APPOINTMENT', (error, results, fields) => {
+      if (error) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Internal Server Error' }));
+          return;
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(results));
+  });
+}
+/*Show Appointments in appointment tab*/
+else if (req.url === '/app') {
   db.query('SELECT PATIENT_PID, FName, LName, Gender, Date, Time FROM APPOINTMENT', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -384,7 +389,6 @@ else {
   res.end('Not Found');
 }
 });
-/*Show Appointments in appointment tab*/
 
 // Start the server
 const PORT = process.env.PORT || 4000;
