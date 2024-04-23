@@ -375,6 +375,9 @@ else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
           res.end(JSON.stringify({ error: 'Internal Server Error' }));
           return;
       }
+
+      results.Date = String(results.Date).substring(0, 10);
+
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(results));
   });
