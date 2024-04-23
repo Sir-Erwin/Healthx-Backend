@@ -376,7 +376,7 @@ else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
           return;
       }
 
-      results.Date = String(results.Date).substring(0, 10);
+      //results.Date = String(results.Date).substring(0, 10);
 
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(results));
