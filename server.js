@@ -225,8 +225,116 @@ else if (pathname === '/emp_signup' && req.method === 'POST'){
   });
   
   });
-/* Adding Employees to the table */
 }
+/**
+ * Patient Creation
+ */
+else if (pathname === '/pat_signup' && req.method === 'POST'){
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on('end', () => {
+    // Parse form data
+    const formData = JSON.parse(body);
+    const fname = formData.fname;
+    const mname = formData.Mname;
+    const lname = formData.Lname;
+    const email = formData.email;
+    const number = formData.number;
+    const social = formData.ssn;
+    const role = formData.role
+    const gender = formData.gender;
+    const password = formData.password;
+    var eid = (formData.eid) ? formData.eid : 8009;
+    //var password = (formData.password) ? formData.password : "Password!";
+
+    /*bcrypt.hash(password, 10, (err, hashedPassword) => {
+
+      if (err) {
+        console.log('\x1B[31Error while hashing password:', err);
+        return;
+      } password = hashedPassword; 
+   }).then(pass => { 
+    if(!formData.eid) {
+      db.query('SELECT EID FROM EMPLOYEE', (err, results) => {
+        eid = results[results.length - 1].EID+1;
+      });
+      password = pass;
+    }
+   }).then(passw, new_eid => {
+    // Example MySQL query (if you're using a database)
+    db.query('INSERT INTO EMPLOYEE (FName, MInitial, LName, Email, SSN, EID, Passw, PhoneNum, Role, Gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+    [fname, mname, lname, email, social, new_eid, passw, number, role, gender], (err, results) => {
+    if (err) {
+        console.error('Error storing data:', err);
+        res.writeHead(500, {'Content-Type': 'text/plain'});
+        res.end('Internal Server Error');
+    } else {
+        console.log('Data stored successfully');
+        res.writeHead(200, {'Content-Type': 'plain/text'});
+        res.end(eid.toString());
+        console.log(eid.toString());
+    }
+  });
+   });*/
+   bcrypt.hash(password, 10, (err, hashedPassword) => {
+    if (err) {
+      console.log('\x1B[31Error while hashing password:', err);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+      return;
+    } 
+  
+    password = hashedPassword;
+  
+    // If new employee, get new employee ID
+    if (!formData.eid) {
+      db.query('SELECT PID FROM PATIENT', (err, results) => {
+        if (err) {
+          console.error('Error getting new employee ID:', err);
+          res.writeHead(500, { 'Content-Type': 'text/plain' });
+          res.end('Internal Server Error');
+          return;
+        }
+        pid = results[results.length - 1].PID + 1;
+  
+        // Insert data into EMPLOYEE table
+        db.query('INSERT INTO PATIENT (Name, Email, SSN, Passw, PhoneNum, Gender) VALUES (?, ?, ?, ?, ?, ?)', 
+          [fname + lname, email, social, password, number, gender], (err, results) => {
+            if (err) {
+              console.error('Error storing data:', err);
+              res.writeHead(500, { 'Content-Type': 'text/plain' });
+              res.end('Internal Server Error');
+              return;
+            }
+            console.log('Data stored successfully');
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end(eid.toString());
+            console.log(eid.toString());
+          });
+      });
+    } else { // If existing employee, insert data directly
+      db.query('INSERT INTO EMPLOYEE (FName, MInitial, LName, Email, SSN, EID, Passw, PhoneNum, Role, Gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+        [fname, mname, lname, email, social, formData.eid, password, number, role, gender], (err, results) => {
+          if (err) {
+            console.error('Error storing data:', err);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal Server Error');
+            return;
+          }
+          console.log('Data stored successfully');
+          res.writeHead(200, { 'Content-Type': 'text/plain' });
+          res.end(formData.eid.toString());
+          console.log(formData.eid.toString());
+        });
+    }
+  });
+  
+  });
+}
+/* Adding Employees to the table */
 else if (req.method === 'POST' && req.url=== '/addEm') {
   let body = '';
   req.on('data', (chunk) => {
@@ -453,6 +561,8 @@ else if (req.url === '/set_appt' && req.method === 'POST') {
 
 else if (req.url === '/Sapp') {
   db.query('SELECT PATIENT_PID, FName, LName, Gender, Date, Time, CLINIC_clinic_id FROM APPOINTMENT', (error, results, fields) => {
+} else if (req.url === '/Sapp') {
+  db.query('SELECT APPOINTMENT.PATIENT_PID, APPOINTMENT.FName, APPOINTMENT.LName, APPOINTMENT.Gender, APPOINTMENT.Date, APPOINTMENT.Time, clinic_location FROM CLINIC JOIN APPOINTMENT ON CLINIC.clinic_id = APPOINTMENT.CLINIC_clinic_id', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ error: 'Internal Server Error' }));
