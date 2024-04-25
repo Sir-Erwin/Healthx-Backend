@@ -437,7 +437,7 @@ else if (req.method === 'POST' && req.url=== '/addDoc') {
 }
 
 /*View Doctors */
-else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
+else if (req.method === 'DELETE' && req.url.startsWith('/Sapp')) {
   // Extract employee ID from the URL
   const id = req.url.split('/')[2];
 
@@ -560,8 +560,6 @@ else if (req.url === '/set_appt' && req.method === 'POST') {
 }
 
 else if (req.url === '/Sapp') {
-  db.query('SELECT PATIENT_PID, FName, LName, Gender, Date, Time, CLINIC_clinic_id FROM APPOINTMENT', (error, results, fields) => {
-} else if (req.url === '/Sapp') {
   db.query('SELECT APPOINTMENT.PATIENT_PID, APPOINTMENT.FName, APPOINTMENT.LName, APPOINTMENT.Gender, APPOINTMENT.Date, APPOINTMENT.Time, clinic_location FROM CLINIC JOIN APPOINTMENT ON CLINIC.clinic_id = APPOINTMENT.CLINIC_clinic_id', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
