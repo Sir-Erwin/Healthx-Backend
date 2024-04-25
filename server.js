@@ -41,7 +41,13 @@ const { pathname, query } = url.parse(req.url, true);
 /**
  * Employee Login
  */
-if (pathname === '/emp_login' && req.method === 'POST') {
+
+if (pathname === '/'){
+  res.writeHead(500, { 'Content-Type': 'text/html' });
+  res.end('<h1>API Works</h1>');
+}
+
+else if (pathname === '/emp_login' && req.method === 'POST') {
   let body = '';
   req.on('data', (chunk) => {
     body += chunk.toString();
