@@ -125,22 +125,23 @@ else if (pathname === '/pat_login' && req.method === 'POST') {
       
       // Compare hashed password
       const user = results[0];
-      console.log("Username: " + username + "\nPassword: " + password + "\nHashedPassw: " + user.Passw + "\n");
+      console.log("Username: " + username + "\nPassword: " + password + "\nHashedPassw: " + user.Passw + "\nPID: " + user.PID);
             
       bcrypt.compare(password, user.Passw, (bcryptErr, bcryptResult) => {
         if (bcryptErr) {
-          res.writeHead(500, { 'Content-Type': 'text/plain' });
+          res.writeHead(500, { 'Content-Type': 'application/json' });
           res.write('Bcrypt Err: Internal server error');
           res.end(JSON.stringify(bcryptErr));
           return;
         }
         if (!bcryptResult) {
-          res.writeHead(401, { 'Content-Type': 'text/plain' });
+          res.writeHead(401, { 'Content-Type': 'application/json' });
           res.end('Invalid username or password');
           return;
         }
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end(JSON.stringify(user.PID));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({pid : user.PID}));
+        console.log(JSON.parse(JSON.stringify({pid : user.PID})));
       });
     });
   });
@@ -169,35 +170,7 @@ else if (pathname === '/emp_signup' && req.method === 'POST'){
     var eid = (formData.eid) ? formData.eid : 8009;
     var password = (formData.password) ? formData.password : "Password!";
 
-    /*bcrypt.hash(password, 10, (err, hashedPassword) => {
 
-      if (err) {
-        console.log('\x1B[31Error while hashing password:', err);
-        return;
-      } password = hashedPassword; 
-   }).then(pass => { 
-    if(!formData.eid) {
-      db.query('SELECT EID FROM EMPLOYEE', (err, results) => {
-        eid = results[results.length - 1].EID+1;
-      });
-      password = pass;
-    }
-   }).then(passw, new_eid => {
-    // Example MySQL query (if you're using a database)
-    db.query('INSERT INTO EMPLOYEE (FName, MInitial, LName, Email, SSN, EID, Passw, PhoneNum, Role, Gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-    [fname, mname, lname, email, social, new_eid, passw, number, role, gender], (err, results) => {
-    if (err) {
-        console.error('Error storing data:', err);
-        res.writeHead(500, {'Content-Type': 'text/plain'});
-        res.end('Internal Server Error');
-    } else {
-        console.log('Data stored successfully');
-        res.writeHead(200, {'Content-Type': 'plain/text'});
-        res.end(eid.toString());
-        console.log(eid.toString());
-    }
-  });
-   });*/
    bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
       console.log('\x1B[31Error while hashing password:', err);
@@ -275,6 +248,7 @@ else if (req.method === 'POST' && req.url=== '/addEm') {
     });
   });
 }
+
 /*Displaying Employees on the table */
 else if (req.method === 'DELETE' && req.url.startsWith('/employees/')) {
   const number = req.url.split('/')[2];
@@ -288,7 +262,9 @@ else if (req.method === 'DELETE' && req.url.startsWith('/employees/')) {
           res.end(JSON.stringify({ message: 'Employee deleted successfully' }));
       }
   });
-} else if (req.url === '/employees') {
+} 
+
+else if (req.url === '/employees') {
   db.query('SELECT EID, FName, LName, Email, Gender, PhoneNum, Role FROM EMPLOYEE', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -299,6 +275,7 @@ else if (req.method === 'DELETE' && req.url.startsWith('/employees/')) {
       res.end(JSON.stringify(results));
   });
 }
+
 /*Displaying Doctors */
 else if (req.method === 'DELETE' && req.url.startsWith('/doc/')) {
   // Extract employee ID from the URL
@@ -314,7 +291,9 @@ else if (req.method === 'DELETE' && req.url.startsWith('/doc/')) {
           res.end(JSON.stringify({ message: 'Employee deleted successfully' }));
       }
   });
-} else if (req.url === '/doc') {
+} 
+
+else if (req.url === '/doc') {
   db.query('SELECT EID, FName, LName, Contact, Gender, PhoneNum FROM DOCTOR', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -325,6 +304,7 @@ else if (req.method === 'DELETE' && req.url.startsWith('/doc/')) {
       res.end(JSON.stringify(results));
   });
 }
+
 /*Add Doctors */
 else if (req.method === 'POST' && req.url=== '/addDoc') {
   let body = '';
@@ -347,6 +327,7 @@ else if (req.method === 'POST' && req.url=== '/addDoc') {
     });
   });
 }
+
 /*View Doctors */
 else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
   // Extract employee ID from the URL
@@ -361,7 +342,116 @@ else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
           res.end(JSON.stringify({ message: 'Employee deleted successfully' }));
       }
   });
-} else if (req.url === '/Sapp') {
+} 
+
+else if (req.url === '/appt_report' && req.method === 'GET') {
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on('end', () => {
+    // Parse form data
+    const formData = JSON.parse(body);
+    const eid = (formData.eid) ? "DOCTOR_EID = " + (formData.eid) : "TRUE";
+    const cid = (formData.cid )? "CLINIC_clinic_id = " + (formData.cid) : "TRUE";
+    const aid = (formData.aid) ? "AID = " + (formData.aid) : "TRUE";
+    const pid = (formData.pid )? "PATIENT_PID = " + (formData.pid) : "TRUE";
+    console.log(eid, pid, cid, aid);
+
+    db.query("SELECT PATIENT_PID, FName, LName, Gender, Date, Time, CLINIC_clinic_id FROM APPOINTMENT WHERE (? AND ? AND ? AND ?)", [aid, eid, cid, pid], (error, results, fields) => {
+        if (error) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Internal Server Error' }));
+            return;
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(results));
+        console.log(results)
+    });
+  });
+
+  
+}
+
+else if (req.url === '/search_appt' && req.method === 'POST') {
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on('end', () => { 
+    // Parse form data
+    const formData = JSON.parse(body); 
+    const doc_name = (formData.doc_name) ? "DOCTOR.LName = \"" + (formData.doc_name) + "\"" : "TRUE";
+    const dep = (formData.dep )? "DOCTOR.Department = \"" + (formData.dep) + "\"" : "TRUE";
+    const st_date = (formData.st_date) ? "work.Date >= \"" + (formData.st_date) + "\"" : "work.Date > CURDATE()";
+    const en_date = (formData.en_date )? "work.Date <= \"" + (formData.en_date) + "\"" : "TRUE";
+    const loc = (formData.loc )? "CLINIC.clinic_location = \"" + (formData.loc) + "\"" : "TRUE";
+    let query_str = (`SELECT SchedID, CLINIC.clinic_name, DOCTOR.FName, DOCTOR.LName, DOCTOR.Gender, DATE_FORMAT(work.Date, '%Y-%m-%d') as Date, TIME_FORMAT(work.Work_Hours_Start, '%h:%i %p') as Start_Time, TIME_FORMAT(work.Work_Hours_End,'%h:%i %p') as End_Time, CLINIC.clinic_location
+    FROM CLINIC, DOCTOR, DOCTOR_WorksIn_CLINIC as work
+    WHERE ( CLINIC.clinic_id = work.CLINIC_clinic_id AND DOCTOR.EID = work.DOCTOR_EID AND work.Has_Appnt = 0) AND (${doc_name} AND ${dep} AND ${st_date} AND ${en_date} AND ${loc})`);
+
+    //console.log(formData);console.log(query_str);
+    
+    db.query(query_str, (error, results, fields) => {
+        if (error) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Internal Server Error' }));
+            console.log(query_str);
+            return;
+        }
+
+        var jsonList = [];
+        for(var i = 0; i < results.length; i++){
+          jsonList[i] = JSON.parse(JSON.stringify(results[i]));
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(jsonList));
+    });
+  });
+
+  
+}
+
+else if (req.url === '/set_appt' && req.method === 'POST') {
+  let body = '';
+  req.on('data', (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on('end', () => { 
+    // Parse form data
+    const {SchedID, PID} = JSON.parse(body); 
+    
+    console.log(JSON.parse(body));
+
+    //console.log(formData);console.log(query_str);
+    
+    db.query("UPDATE `wb1uv6dqlflyabu2`.`DOCTOR_WorksIn_CLINIC` SET `Has_Appnt` = '1' WHERE (`SchedID` = '?')", [SchedID], (error, results, fields) => {
+        if (error) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Internal Server Error' }));
+            console.log(query_str);
+            return;
+        }
+
+        var jsonList = [];
+        for(var i = 0; i < results.length; i++){
+          jsonList[i] = JSON.parse(JSON.stringify(results[i]));
+        }
+    });
+
+    let query_str = "INSERT INTO `APPOINTMENT` (`AID`, `PrimaryPhys`, `Date`, `Time`, `PATIENT_PID`, `DOCTOR_EID`, `CLINIC_clinic_id`) VALUES ";
+
+    db.query(query_str);
+  });
+
+  
+}
+
+else if (req.url === '/Sapp') {
   db.query('SELECT PATIENT_PID, FName, LName, Gender, Date, Time, CLINIC_clinic_id FROM APPOINTMENT', (error, results, fields) => {
       if (error) {
           res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -372,6 +462,7 @@ else if (req.method === 'DELETE' && req.url.startsWith('/Sapp/')) {
       res.end(JSON.stringify(results));
   });
 }
+
 /*Show Appointments in appointment tab*/
 else if (req.url === '/app') {
   db.query('SELECT PATIENT_PID, FName, LName, Gender, Date, Time FROM APPOINTMENT', (error, results, fields) => {
@@ -387,6 +478,7 @@ else if (req.url === '/app') {
       res.end(JSON.stringify(results));
   });
 }
+
 else {
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.end('Not Found');

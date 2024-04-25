@@ -29,7 +29,7 @@ function insertKidneyFuncTestResults(data, callback) {
 
   const sql = `INSERT INTO KIDNEY_FUNC_TEST_RESULT (RID, Sodium, Chloride, Bicarbonate, Urea, Creatinine, eGFR, \`Anion Gap\`, Bilirubin) VALUES ${values}`;
 
-  connection.query(sql, (error, results) => {
+  connection.query(`INSERT INTO KIDNEY_FUNC_TEST_RESULT (RID, Sodium, Chloride, Bicarbonate, Urea, Creatinine, eGFR, \`Anion Gap\`, Bilirubin) VALUES ${values}`, (error, results) => {
     if (error) {
       callback(error, null);
     } else {
