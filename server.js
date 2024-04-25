@@ -1,6 +1,5 @@
 const http = require('http');
 const url = require('url');
-const fs = require('fs');
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 
@@ -340,6 +339,7 @@ else if (pathname === '/pat_signup' && req.method === 'POST'){
   
   });
 }
+
 /* Adding Employees to the table */
 else if (req.method === 'POST' && req.url=== '/addEm') {
   let body = '';
@@ -560,6 +560,7 @@ else if (req.url === '/set_appt' && req.method === 'POST') {
     let query_str = "INSERT INTO `APPOINTMENT` (`AID`, `PrimaryPhys`, `Date`, `Time`, `PATIENT_PID`, `DOCTOR_EID`, `CLINIC_clinic_id`) VALUES ";
 
     db.query(query_str);
+    
   });
 
   
